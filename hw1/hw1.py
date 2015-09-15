@@ -1,23 +1,40 @@
 from Bio import SeqIO
+import numpy
+import scipy
+import matplotlib.pyplot as plt
 
 for n in SeqIO.parse("sequence.fasta","fasta"):
 	next
 
 #test
-print(n.seq)
+#print(n.seq)
+arr = []
+arr.append(n.seq.count("A"))
+arr.append(n.seq.count("C"))
+arr.append(n.seq.count("T"))
+arr.append(n.seq.count("G"))
 
-a = n.seq.count("A")
-c = n.seq.count("C")
-t = n.seq.count("T")
-g = n.seq.count("G")
-at = a + t
-cg = c + g
+at = arr[0] + arr[2]
+cg = arr[1] + arr[3]
 
-print(a,c,t,g, at,cg)
+#print counts of each
+#print(arr, at, cg)
 
-l1 = 500
-l2 = 1000
-l3 = len(n.seq)/20
-print len(n.seq)
-print(l1,l2,l3)
+#window sizes
+w = [500, 1000, (len(n.seq)/20)]
 
+#print window sizes
+#print(w)
+
+#find number of points to plot for each window size (x values)
+length = len(n.seq)
+print(length)
+indices = []
+for window in w:
+	indices.append(length/window)
+print(indices)
+
+#plot windows
+#plt.plot(12)
+#plt.ylabel("Count")
+#plt.show()
