@@ -115,7 +115,6 @@ def gibbs(sequences,motifs,start_indexes,burnin):
 	A = []
 	for i in range(len(motifs)):
 		A.append(random.randrange(0,L-w))
-	# print (A)
 
 	#burnin iteration
 	for _ in range(burnin):
@@ -124,30 +123,25 @@ def gibbs(sequences,motifs,start_indexes,burnin):
 
 			#Motif Model Calculation
 			Theta_m = motif_model(motifs,i)
-			# print(Theta_m)
 
 			#Background Model Calculation
 			Theta_B = background_model(start_indexes,sequences,i)
-			# print(Theta_B)
 
 			#Probability from Motif Model
 			Probability_m = find_pm(sequences[i],Theta_m)
-			# print(Probability_m)
 
 			#Probability from Background Model
 			Probability_B = find_pb(sequences[i],Theta_B)
-			# print(Probability_B)
 
 			#ratio calculation
 			ratios = cal_ratios(Probability_m,Probability_B)
-			# print(ratios)
 
 			#estimate new motif start location
 			ratios = normalize(ratios)
 			a_temp = np.random.choice(93,p=ratios)
 			A[i] = a_temp
-			# print(a_temp)
 	Burn = A
+
 	# sampling iteration
 	C = c_init()
 	for _ in range(burnin*2):
@@ -156,31 +150,25 @@ def gibbs(sequences,motifs,start_indexes,burnin):
 
 			#Motif Model Calculation
 			Theta_m = motif_model(motifs,i)
-			# print(Theta_m)
 
 			#Background Model Calculation
 			Theta_B = background_model(start_indexes,sequences,i)
-			# print(Theta_B)
 
 			#Probability from Motif Model
 			Probability_m = find_pm(sequences[i],Theta_m)
-			# print(Probability_m)
 
 			#Probability from Background Model
 			Probability_B = find_pb(sequences[i],Theta_B)
-			# print(Probability_B)
 
 			#ratio calculation
 			ratios = cal_ratios(Probability_m,Probability_B)
-			# print(ratios)
 
 			#estimate new motif start location
 			ratios = normalize(ratios)
 			a_temp = np.random.choice(93,p=ratios)
 			A[i] = a_temp
 			C[i][a_temp] += 1.0
-			# print(a_temp)
-	return Burn,A,C
+	return Burn,A,C,Theta_m,Theta_B
 
 def c_init():
 	answer = []
@@ -199,26 +187,6 @@ def g_init(w):
 			answer[i].append(0.0)
 	return answer
 
-"""
-When to quit?
-posterior alignment probability, 
-quit when it plateaus, 
-report MAP(max posteriori probability)
-give point estimate of models and site positions
-
-i = sequence
-j = position
-
-Motif Model
-Theta_m = (n[i][j] + a[i][j]) / sum(n[i][l] + a[i][l] for all l)
-
-Background Model
-Theta_B = (n[B][j] + a[B][j]) / sum(n[B][l] + a[B][j] for all l) 
-
-Sample position based on probability ratio of each position
-P(X[i][j]...X[i][j+w-1] | Theta_m) / P(X[i][j]...X[i][j+w-1] | Theta_B)
-
-"""
 def normalize_C(C,count):
 	answer = []
 	for i in range(len(C)):
@@ -234,17 +202,10 @@ def adjust_index(Indexes):
 		answer.append(index + 1)
 	return answer
 
-def main():
-
-	records = parse("test.fasta")
-	# print (records)
-
-	sequences,motifs,start_indexes = parse_motifs(records)
-	# print (motifs)
+def run(sequences,motifs,start_indexes,burnin):
 	
-	burnin = 100
 	print("Calculating for a burn-in:", burnin)
-	Burn,g_indexes,C = gibbs(sequences,motifs,start_indexes,burnin)
+	Burn,g_indexes,C,Theta_m,Theta_B = gibbs(sequences,motifs,start_indexes,burnin)
 	Burn = adjust_index(Burn)
 	g_indexes = adjust_index(g_indexes)
 	print("Actual Start Indexes:")
@@ -254,37 +215,78 @@ def main():
 	print("Estimated Sample Start Indexes:")
 	print(g_indexes)
 
-	C = normalize_C(C, burnin*2)
+	return Burn,g_indexes,C,Theta_m,Theta_B
 
-	for i in range(len(C)):
-		plt.bar(np.arange(1,101),C[i],label="Count for Seq "+str(i))
+def main():
+
+	#parse the sequences,motifs and start indexes from a record into lists
+	records = parse("test.fasta")
+	sequences,motifs,start_indexes = parse_motifs(records)
+	
+	#set burnin and iterate through the gibbs sampler 5 times
+	burnin = 100
+	Burn = []
+	g_indexes = []
+	C = []
+	m = []
+	B = []
+	for _ in range(5):
+		t1,t2,t3,t4,t5 = run(sequences,motifs,start_indexes,burnin)
+		Burn.append(t1)
+		g_indexes.append(t2)
+		C.append(t3)
+		m.append(t4)
+		B.append(t5)
+
+	#sum counts and normalize
+	Counts = c_init()
+	for iteration in range(len(C)):
+		for i in range(len(C[iteration])):
+			for j in range(len(C[iteration][i])):
+				Counts[i][j] += C[iteration][i][j]
+	Counts = normalize_C(Counts,5*2*burnin)
+
+	#average motif model
+	Theta_m = g_init(10)
+	for i in ['A','C','T','G']:
+		for j in range(len(m[0][i])):
+			temp = 0.0
+			for iteration in range(len(m)):
+				temp += m[iteration][i][j]
+			Theta_m[i][j] = temp/5.0
+	print("\nAverage Motif Model")
+	for i in ['A','C','T','G']:
+		temp = str(Theta_m[i][0])
+		for j in range(1,len(Theta_m[i])):
+			temp = temp + " " + str(Theta_m[i][j])
+		print(i + ": " + temp)
+
+
+	#average of background model
+	Theta_B = {}
+	for i in ['A','C','T','G']:
+		Theta_B[i] = 0.0
+	for i in ['A','C','T','G']:
+		temp = 0.0
+		for iteration in range(len(B)):
+			temp += B[iteration][i]
+		Theta_B[i] = temp/5.0
+	print("\nAverage Background Model")
+	for i in ['A','C','T','G']:
+		print(i + " " + str(Theta_B[i]))
+
+	print("")
+	for seq in range(len(sequences)):
+		print("Seq " + str(seq+1) + ": " + str(start_indexes[seq]) + " " + motifs[seq] + " " + str(Counts[seq][start_indexes[seq]-1]) )
+
+	for i in range(len(Counts)):
+		plt.bar(np.arange(1,101),Counts[i],label="Count for Seq "+str(i+1))
 		plt.title("Sampling Probability for Sequence "+str(i+1))
 		plt.ylabel("Frequency")
 		plt.xlabel("Position")
 		plt.xlim(0,100)
+		plt.ylim(0,1)
 		plt.show()
-
-	# burnin = 1000
-	# print("\nCalculating for a burn-in:", burnin)
-	# Burn,g_indexes,C1 = gibbs(sequences,motifs,start_indexes,burnin)
-	# Burn = adjust_index(Burn)
-	# g_indexes = adjust_index(g_indexes)
-	# print("Actual Start Indexes:")
-	# print(start_indexes)
-	# print("Estimated Burn Start Indexes:")
-	# print(Burn)
-	# print("Estimated Sample Start Indexes:")
-	# print(g_indexes)
-
-	# C1 = normalize_C(C1, burnin*2)
-
-	# for i in range(len(C1)):
-	# 	plt.bar(np.arange(1,101),C1[i],label="Count for Seq "+str(i))
-	# 	plt.title("Sampling Probability for Sequence "+str(i+1))
-	# 	plt.ylabel("Frequency")
-	# 	plt.xlabel("Position")
-	# 	plt.xlim(0,100)
-	# 	plt.show()
 
 	return 0
 
