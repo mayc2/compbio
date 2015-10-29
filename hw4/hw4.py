@@ -6,12 +6,8 @@ import matplotlib.pyplot as plt
 import random
 from Bio import SeqIO
 
-def parse(filename):
-
-	answer = list(SeqIO.parse(open(filename),"fasta"))
-	return answer
-
-def parse_motifs(records):
+def parse_motifs(filename):
+	records = list(SeqIO.parse(open(filename),"fasta"))
 	motifs = []
 	start_indexes = []
 	sequences = []
@@ -60,7 +56,6 @@ def background_model(start_indexes,sequences,exclude):
 	#for each position in the sequence
 	for j in range(len(sequences[0])):
 		#for each sequence
-		
 		for i in range(len(sequences)):
 			ignore = int(start_indexes[i])-1
 			if (i != exclude):
@@ -125,7 +120,7 @@ def gibbs(sequences,motifs,start_indexes,burnin):
 			Theta_m = motif_model(motifs,i)
 
 			#Background Model Calculation
-			Theta_B = background_model(start_indexes,sequences,i)
+			Theta_B = background_model(A,sequences,i)
 
 			#Probability from Motif Model
 			Probability_m = find_pm(sequences[i],Theta_m)
@@ -152,7 +147,7 @@ def gibbs(sequences,motifs,start_indexes,burnin):
 			Theta_m = motif_model(motifs,i)
 
 			#Background Model Calculation
-			Theta_B = background_model(start_indexes,sequences,i)
+			Theta_B = background_model(A,sequences,i)
 
 			#Probability from Motif Model
 			Probability_m = find_pm(sequences[i],Theta_m)
@@ -167,6 +162,8 @@ def gibbs(sequences,motifs,start_indexes,burnin):
 			ratios = normalize(ratios)
 			a_temp = np.random.choice(93,p=ratios)
 			A[i] = a_temp
+
+			#update Count
 			C[i][a_temp] += 1.0
 	return Burn,A,C,Theta_m,Theta_B
 
@@ -196,42 +193,20 @@ def normalize_C(C,count):
 		answer.append(temp)
 	return answer
 
-def adjust_index(Indexes):
-	answer = []
-	for index in Indexes:
-		answer.append(index + 1)
-	return answer
-
-def run(sequences,motifs,start_indexes,burnin):
-	
-	print("Calculating for a burn-in:", burnin)
-	Burn,g_indexes,C,Theta_m,Theta_B = gibbs(sequences,motifs,start_indexes,burnin)
-	Burn = adjust_index(Burn)
-	g_indexes = adjust_index(g_indexes)
-	print("Actual Start Indexes:")
-	print(start_indexes)
-	print("Estimated Burn Start Indexes:")
-	print(Burn)
-	print("Estimated Sample Start Indexes:")
-	print(g_indexes)
-
-	return Burn,g_indexes,C,Theta_m,Theta_B
-
 def main():
 
 	#parse the sequences,motifs and start indexes from a record into lists
-	records = parse("test.fasta")
-	sequences,motifs,start_indexes = parse_motifs(records)
+	sequences,motifs,start_indexes = parse_motifs("test.fasta")
 	
 	#set burnin and iterate through the gibbs sampler 5 times
-	burnin = 100
+	burnin = 1000
 	Burn = []
 	g_indexes = []
 	C = []
 	m = []
 	B = []
 	for _ in range(5):
-		t1,t2,t3,t4,t5 = run(sequences,motifs,start_indexes,burnin)
+		t1,t2,t3,t4,t5 = gibbs(sequences,motifs,start_indexes,burnin)
 		Burn.append(t1)
 		g_indexes.append(t2)
 		C.append(t3)
@@ -257,10 +232,9 @@ def main():
 	print("\nAverage Motif Model")
 	for i in ['A','C','T','G']:
 		temp = str(Theta_m[i][0])
-		for j in range(1,len(Theta_m[i])):
+		for j in range(1,8):
 			temp = temp + " " + str(Theta_m[i][j])
-		print(i + ": " + temp)
-
+		print("\n" + i + ": " + temp)
 
 	#average of background model
 	Theta_B = {}
@@ -275,10 +249,12 @@ def main():
 	for i in ['A','C','T','G']:
 		print(i + " " + str(Theta_B[i]))
 
-	print("")
+	#print Motif Locations, Sequences and Frequencies for each sequence
+	print("\nMotif Locations, Sequences and Frequencies")
 	for seq in range(len(sequences)):
 		print("Seq " + str(seq+1) + ": " + str(start_indexes[seq]) + " " + motifs[seq] + " " + str(Counts[seq][start_indexes[seq]-1]) )
 
+	#display graphs for the probabilities of each sequence
 	for i in range(len(Counts)):
 		plt.bar(np.arange(1,101),Counts[i],label="Count for Seq "+str(i+1))
 		plt.title("Sampling Probability for Sequence "+str(i+1))
