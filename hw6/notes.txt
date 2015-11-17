@@ -1,0 +1,4 @@
+alpha is mutation rate
+t is the time
+
+multiply number by million
