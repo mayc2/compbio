@@ -1,0 +1,162 @@
+1. Give a clear statement of the problem.
+
+In this assignment, provide with and unknown amino-acid sequence of pf different proteins, the goal was to discover the most closely related sequences from known libraries by analyzing the top ten hits using the NCBI BLAST server program.
+
+2. Give a brief description of the method of your procedure. This should be a few sentences describing the problem, solution, and results. It should be similar to an abstract in a scientific paper.
+
+Inputting the amino-acid sequence to the NCBI BLAST server, the protein blast algorithm, blastp, was used with default parameters to find a set of known alignments (or hits) that matched the alignment of the unknown sequence most closely. These hits were then available to be analyzed further.
+
+3. Present the procedure in detail, including any relevant mathematics. If the solution involves programming, give an overview in words of how the program operates. The presentation should contain sufficient detail so that a reader can follow each step without difficulty. *
+
+Step 1: Obtain the unknown amino-acid sequence of proteins in FASTA file format
+Step 2: Submit FASTA formatted sequence to NCBI BLAST server
+Step 3: Select the protein blast program and run using default parameters
+Step 4: (automated by server) algorithm runs and computes the following information - top hits description, max score, total score, query cover, e-value, ident, accession id, alignment, bit-score, match length, link to seqeunce id information
+Step 5: Based off of this set, select the top ten to be analyzed.
+Step 6: for each hit, the description, match length, e-value, bit-score and percent identity were recorded. Note: amino acid sequences do not deal with strand information
+Step 7: for the top hit, the sequence identity, the genomic type (gene, cds, exon, intron, etc.), the function of the sequence (and its gene function if larger structure) and the species the sequence was derived from was recorded in addition to the previous information in step 6. 
+
+
+4. If the solution involves programming code, output must be clearly labeled with each item having a descriptive title. Programming code must be documented with comments describing each major step in the program and all relevant variables. Source code should be submitted in a separate file. *
+
+5. Graphs must be titled and have each axis labeled clearly
+
+Top Hit, Additional Information:
+
+The genomic type of the top hit, nucleoprotein [Zaire ebolavirus], is NP which comes from Zaire ebolavirus isolate H.sapiens-wt/GIN/2014/Makona-Gueckedou-C05, complete genome. This protein sequence is a Coding Sequence (CDS), which is the portion of a transcript that is actually translated into protein. More specifically the CDS starts at loaction 470 and ends at location 2689 in the genome. The function of the sequence at the biological component level is that it is viral RNA genome packaging. At the cellular component level, the function of the seqeunce is that it is a viral nucleocpasid. In other words, it encapsidates the genome, protecting it from nucleases. The encapsilated genomic RNA is termed the nucleocapsid and serves as a template for transcription and replication. During replication, encapsidation by NP is coupled to RNA synthesis and all replicative products are resistant to nucleases. The species the sequence was derived from is most likely the H.sapiens-wt/GIN/2014/Makona-Gueckedou-C05. It's common name is Zaire Ebolavirus and was obtained in the blood from a Human Host in Guinea. Its taxonomy is as follows: Filoviridae -> Ebolavirus -> Zaire ebolavirus, with taxonomy ID: 186538. Zaire ebolavirus sequence matches appear in these sources: Eckron (Zaire, 1976) - 129000, Gabon (1994-1997) - 128947, Mayinga, Zaire, 1976 - 128952, Zaire - 128951.
+
+Alignment:
+Query  1    MDSRPQKVWMTPSLTESDMDYHKILTAGLSVQQGIVRQRVIPVYQVNNLEEICQLIIQAF  60
+            MDSRPQKVWMTPSLTESDMDYHKILTAGLSVQQGIVRQRVIPVYQVNNLEEICQLIIQAF
+Sbjct  1    MDSRPQKVWMTPSLTESDMDYHKILTAGLSVQQGIVRQRVIPVYQVNNLEEICQLIIQAF  60
+
+Query  61   EAGVDFQESADSFLLMLCLHHAYQGDYKLFLESGAVKYLEGHGFRFEVKKRDGVKRLEEL  120
+            EAGVDFQESADSFLLMLCLHHAYQGDYKLFLESGAVKYLEGHGFRFEVKKRDGVKRLEEL
+Sbjct  61   EAGVDFQESADSFLLMLCLHHAYQGDYKLFLESGAVKYLEGHGFRFEVKKRDGVKRLEEL  120
+
+Query  121  LPAVSSGRNIKRTLAAMPEEETTEANAGQFLSFASLFLPKLVVGEKACLEKVQRQIQVHA  180
+            LPAVSSGRNIKRTLAAMPEEETTEANAGQFLSFASLFLPKLVVGEKACLEKVQRQIQVHA
+Sbjct  121  LPAVSSGRNIKRTLAAMPEEETTEANAGQFLSFASLFLPKLVVGEKACLEKVQRQIQVHA  180
+
+Query  181  EQGLIQYPTAWQSVGHMMVIFRLMRTNFLIKFLLIHQGMHMVAGHDANDAVISNSVAQAR  240
+            EQGLIQYPTAWQSVGHMMVIFRLMRTNFLIKFLLIHQGMHMVAGHDANDAVISNSVAQAR
+Sbjct  181  EQGLIQYPTAWQSVGHMMVIFRLMRTNFLIKFLLIHQGMHMVAGHDANDAVISNSVAQAR  240
+
+Query  241  FSGLLIVKTVLDHILQKTERGVRLHPLARTAKVKNEVNSFKAALSSLAKHGEYAPFARLL  300
+            FSGLLIVKTVLDHILQKTERGVRLHPLARTAKVKNEVNSFKAALSSLAKHGEYAPFARLL
+Sbjct  241  FSGLLIVKTVLDHILQKTERGVRLHPLARTAKVKNEVNSFKAALSSLAKHGEYAPFARLL  300
+
+Query  301  NLSGVNNLEHGLFPQLSAIALGVATAHGSTLAGVNVGEQYQQLREAATEAEKQLQQYAES  360
+            NLSGVNNLEHGLFPQLSAIALGVATAHGSTLAGVNVGEQYQQLREAATEAEKQLQQYAES
+Sbjct  301  NLSGVNNLEHGLFPQLSAIALGVATAHGSTLAGVNVGEQYQQLREAATEAEKQLQQYAES  360
+
+Query  361  RELDHLGLDDQEKKILMNFHQKKNEISFQQTNAMVTLRKERLAKLTEAITAASLPKTSGH  420
+            RELDHLGLDDQEKKILMNFHQKKNEISFQQTNAMVTLRKERLAKLTEAITAASLPKTSGH
+Sbjct  361  RELDHLGLDDQEKKILMNFHQKKNEISFQQTNAMVTLRKERLAKLTEAITAASLPKTSGH  420
+
+Query  421  YDDDDDIPFPGPINDDDNPGHQDDDPTDSQDTTIPDVVVDPDDGGYGEYQSYSENGMSAP  480
+            YDDDDDIPFPGPINDDDNPGHQDDDPTDSQDTTIPDVVVDPDDGGYGEYQSYSENGMSAP
+Sbjct  421  YDDDDDIPFPGPINDDDNPGHQDDDPTDSQDTTIPDVVVDPDDGGYGEYQSYSENGMSAP  480
+
+Query  481  DDLVLFDLDEDDEDTKPVPNRSTKGGQQKNSQKGQHTEGRQTQSTPTQNVTGPRRTIHHA  540
+            DDLVLFDLDEDDEDTKPVPNRSTKGGQQKNSQKGQHTEGRQTQSTPTQNVTGPRRTIHHA
+Sbjct  481  DDLVLFDLDEDDEDTKPVPNRSTKGGQQKNSQKGQHTEGRQTQSTPTQNVTGPRRTIHHA  540
+
+Query  541  SAPLTDNDRRNGPSGSTSPRMLTPINEEADPLDDADDETSSLPPLESDDEEQDRDGTSNR  600
+            SAPLTDNDRRNGPSGSTSPRMLTPINEEADPLDDADDETSSLPPLESDDEEQDRDGTSNR
+Sbjct  541  SAPLTDNDRRNGPSGSTSPRMLTPINEEADPLDDADDETSSLPPLESDDEEQDRDGTSNR  600
+
+Query  601  TPTVAPPAPVYRDHSEKKELPQDEQQDQDHIQEARNQDSDNTQPEHSFEEMYRHILRSQG  660
+            TPTVAPPAPVYRDHSEKKELPQDEQQDQDHIQEARNQDSDNTQPEHSFEEMYRHILRSQG
+Sbjct  601  TPTVAPPAPVYRDHSEKKELPQDEQQDQDHIQEARNQDSDNTQPEHSFEEMYRHILRSQG  660
+
+Query  661  PFDAVLYYHMMKDEPVVFSTSDGKEYTYPDSLEEEYPPWLTEKEAMNDENRFVTLDGQQF  720
+            PFDAVLYYHMMKDEPVVFSTSDGKEYTYPDSLEEEYPPWLTEKEAMNDENRFVTLDGQQF
+Sbjct  661  PFDAVLYYHMMKDEPVVFSTSDGKEYTYPDSLEEEYPPWLTEKEAMNDENRFVTLDGQQF  720
+
+Query  721  YWPVMNHRNKFMAILQHHQ  739
+            YWPVMNHRNKFMAILQHHQ
+Sbjct  721  YWPVMNHRNKFMAILQHHQ  739
+
+
+Recorded Information (1 - top hit):
+
+1.
+description: nucleoprotein [Zaire ebolavirus] 
+Sequence ID: gb|AHX24664.1
+match length: 739
+e-value: 0.0
+bit-score: 1539 bits(3985)
+per cent identity: 100%
+
+2.
+description: nucleoprotein [Zaire ebolavirus] 
+Sequence ID: gb|AHX24646.1
+match length: 739
+e-value: 0.0
+bit-score: 1536 bits(3978)
+per cent identity: 99%
+
+3.
+description: nucleoprotein [Zaire ebolavirus] 
+Sequence ID: gb|AKI82750.1
+match length: 738?
+e-value: 0.0
+bit-score: 1535 bits(3975)
+per cent identity: 99%
+
+4.
+description: nucleoprotein [Zaire ebolavirus]
+Sequence ID: gb|AKG65760.1
+match length: 738?
+e-value: 0.0
+bit-score: 1535 bits(3974)
+per cent identity: 99%
+
+5.
+description: nucleoprotein [Zaire ebolavirus]
+Sequence ID: gb|AKG65112.1
+match length: 738
+e-value: 0.0
+bit-score: 1534 bits(3972)
+per cent identity: 99%
+
+6.
+description: nucleoprotein [Zaire ebolavirus]
+Sequence ID: gb|AKI82777.1
+match length: 738
+e-value: 0.0
+bit-score: 1533 bits(3970)
+per cent identity: 99%
+
+7.
+description: nucleoprotein [Zaire ebolavirus]
+Sequence ID: gb|AKI84145.1
+match length: 737
+e-value: 0.0
+bit-score: 1533 bits(3969)
+per cent identity: 99%
+
+8.
+description: nucleoprotein [Zaire ebolavirus]
+Sequence ID: gb|AIE11815.1
+match length: 737
+e-value: 0.0
+bit-score: 1533 bits(3968)
+per cent identity: 99%
+
+9.
+description: nucleoprotein [Zaire ebolavirus]
+Sequence ID: gb|AKU75300.1
+match length: 737
+e-value: 0.0
+bit-score: 1532 bits(3967)
+per cent identity: 99%
+
+10.
+description: nucleoprotein [Zaire ebolavirus]
+Sequence ID: gb|AKI84199.1
+match length: 737
+e-value: 0.0
+bit-score: 1532 bits(3967)
+per cent identity: 99%
